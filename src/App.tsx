@@ -45,10 +45,12 @@ function App() {
 					{/* <Button>Convert</Button> */}
 				</div>
 				<div className="w-1/2 h-full flex flex-col gap-4 justify-center items-center">
-					<p className="text-2xl font-bold">Preview</p>
+					<p className="text-2xl font-bold">Formatted JSON</p>
 					<div className="h-full w-full overflow-auto p-2 rounded-lg bg-card border border-border">
-						{!error && (
-							<pre className="whitespace-pre-wrap">{JSON.parse(content)}</pre>
+						{!error && !!content && (
+							<pre className="whitespace-pre-wrap">
+								{JSON.stringify(JSON.parse(content), null, 2)}
+							</pre>
 						)}
 					</div>
 				</div>
