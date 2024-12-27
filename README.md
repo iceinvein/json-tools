@@ -1,11 +1,11 @@
 # JSON Tools
 
-A simple web application that allows you to format JSON strings.
+Welcome to JSON Tools, a collection of tools to help you work with JSON data.
 
 ## Features
 
-- Format JSON strings
-- Validate JSON strings
+- **JSON Formatter**: Format JSON data to make it easier to read.
+- **JSON to TypeScript Type**: Convert JSON data to TypeScript type definitions.
 
 ## Getting Started
 
