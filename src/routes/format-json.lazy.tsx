@@ -57,7 +57,7 @@ function RouteComponent() {
 	}, [displayText, content]);
 
 	const TokenizedLine = ({ line }: { line: string }) => {
-		const tokens = [];
+		const tokens: JSX.Element[] = [];
 		let currentIndex = 0;
 
 		while (currentIndex < line.length) {
