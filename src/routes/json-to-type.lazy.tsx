@@ -1,18 +1,56 @@
 import { Textarea } from "@/components/ui/textarea";
-import { jsonTokenPatterns, validateJson } from "@/lib/utils";
+import { createTypeFromJson, tsTokenPatterns, validateJson } from "@/lib/utils";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
-export const Route = createLazyFileRoute("/format-json")({
+export const Route = createLazyFileRoute("/json-to-type")({
 	component: RouteComponent,
 });
 
 function RouteComponent() {
 	const [content, setContent] = useState("");
 	const [error, setError] = useState("");
-
 	const [displayText, setDisplayText] = useState("");
 	const [isComplete, setIsComplete] = useState(false);
+
+	const TokenizedLine = ({ line }: { line: string }) => {
+		const tokens: JSX.Element[] = [];
+		let currentIndex = 0;
+
+		while (currentIndex < line.length) {
+			let matched = false;
+
+			for (const { pattern, className } of tsTokenPatterns) {
+				const match = line.slice(currentIndex).match(pattern);
+
+				if (match && match.index === 0) {
+					const value = match[0];
+
+					tokens.push(
+						<span key={currentIndex} className={className}>
+							{value}
+						</span>,
+					);
+
+					currentIndex += value.length;
+					matched = true;
+					break;
+				}
+			}
+
+			if (!matched) {
+				// Add unmatched characters as plain text
+				tokens.push(
+					<span key={currentIndex} className="text-gray-200">
+						{line[currentIndex]}
+					</span>,
+				);
+				currentIndex++;
+			}
+		}
+
+		return <>{tokens}</>;
+	};
 
 	useEffect(() => {
 		if (!content) {
@@ -28,7 +66,7 @@ function RouteComponent() {
 
 		setError("");
 
-		const formattedJsonString = JSON.stringify(JSON.parse(content), null, 2);
+		const formattedJsonString = createTypeFromJson(JSON.parse(content));
 
 		if (displayText.length < formattedJsonString.length) {
 			const timeout = setTimeout(
@@ -41,45 +79,6 @@ function RouteComponent() {
 
 		setIsComplete((prev) => !prev);
 	}, [displayText, content]);
-
-	const TokenizedLine = ({ line }: { line: string }) => {
-		const tokens: JSX.Element[] = [];
-		let currentIndex = 0;
-
-		while (currentIndex < line.length) {
-			let matched = false;
-			for (const { type, pattern, className } of jsonTokenPatterns) {
-				const match = line.slice(currentIndex).match(pattern);
-				if (match && match.index === 0) {
-					const value = match[0];
-					const content = ["string", "number", "boolean"].includes(type)
-						? value.replace(/^:\s*/, "")
-						: value;
-
-					tokens.push(
-						<span key={currentIndex} className={className}>
-							{content}
-						</span>,
-					);
-
-					currentIndex += value.length;
-					matched = true;
-					break;
-				}
-			}
-
-			if (!matched) {
-				tokens.push(
-					<span key={currentIndex} className="text-gray-200">
-						{line[currentIndex]}
-					</span>,
-				);
-				currentIndex++;
-			}
-		}
-
-		return <>{tokens}</>;
-	};
 
 	return (
 		<div className="flex flex-row gap-8 items-center justify-center h-[calc(100svh-4rem)] p-8">
@@ -114,7 +113,9 @@ function RouteComponent() {
 						{error ? (
 							<span className="ml-4 text-red-500 text-sm">{error}</span>
 						) : (
-							<span className="ml-4 text-gray-400 text-sm">Formatted JSON</span>
+							<span className="ml-4 text-gray-400 text-sm">
+								Typescript Type
+							</span>
 						)}
 					</div>
 					{displayText && (

@@ -12,6 +12,7 @@ function RootComponent() {
 				<nav className="flex flex-row items-center justify-flex-start gap-6">
 					<a href="/">Home</a>
 					<a href="/format-json">Format JSON</a>
+					<a href="/json-to-type">JSON to TS Type</a>
 				</nav>
 			</div>
 			<hr />
