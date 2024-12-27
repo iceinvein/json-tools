@@ -16,7 +16,7 @@ function RootComponent() {
 			</div>
 			<hr />
 			<Outlet />
-			<TanStackRouterDevtools />
+			{import.meta.env.DEV && <TanStackRouterDevtools />}
 		</>
 	);
 }
