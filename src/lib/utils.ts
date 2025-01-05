@@ -14,6 +14,23 @@ export const validateJson = (json: string) => {
 	return true;
 };
 
+const handleSpecialCharacters = (str: string): string => {
+	const words = str
+		.replace(/[^a-zA-Z0-9]+/g, " ")
+		.trim()
+		.split(/\s+/);
+
+	// Convert to camelCase
+	return words
+		.map((word, index) => {
+			// Convert first word to lowercase, capitalize others
+			return index === 0
+				? word.toLowerCase()
+				: word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+		})
+		.join("");
+};
+
 export const createTypeFromJson = (
 	json: object,
 	typeName = "GeneratedType",
@@ -45,7 +62,7 @@ export const createTypeFromJson = (
 ${Object.entries(obj)
 	.map(
 		([key, value]) =>
-			`${indentation}  ${key}: ${parseJsonToTs(value, level + 1)};`,
+			`${indentation}  ${handleSpecialCharacters(key)}: ${parseJsonToTs(value, level + 1)};`,
 	)
 	.join("\n")}
 ${indentation}}`;
