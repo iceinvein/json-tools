@@ -1,7 +1,7 @@
 import { Textarea } from "@/components/ui/textarea";
 import { createTypeFromJson, tsTokenPatterns, validateJson } from "@/lib/utils";
 import { createLazyFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export const Route = createLazyFileRoute("/json-to-type")({
 	component: RouteComponent,
@@ -52,10 +52,22 @@ function RouteComponent() {
 		return <>{tokens}</>;
 	};
 
+	const targetRef = useRef("");
+
 	useEffect(() => {
 		if (!content) {
 			setDisplayText("");
+			setError("");
 			return;
+		}
+
+		const currentFormattedType = validateJson(content)
+			? createTypeFromJson(JSON.parse(content))
+			: "";
+
+		if (currentFormattedType !== targetRef.current) {
+			setDisplayText("");
+			targetRef.current = currentFormattedType;
 		}
 
 		if (!validateJson(content)) {
@@ -66,12 +78,10 @@ function RouteComponent() {
 
 		setError("");
 
-		const formattedJsonString = createTypeFromJson(JSON.parse(content));
-
-		if (displayText.length < formattedJsonString.length) {
+		if (displayText.length < currentFormattedType.length) {
 			const timeout = setTimeout(
 				() =>
-					setDisplayText(formattedJsonString.slice(0, displayText.length + 1)),
+					setDisplayText(currentFormattedType.slice(0, displayText.length + 1)),
 				10,
 			);
 			return () => clearTimeout(timeout);
